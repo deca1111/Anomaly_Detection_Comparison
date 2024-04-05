@@ -182,7 +182,7 @@ class Trainer:
 
         "=========================================== data for logging ================================================="
 
-        self.display_x = next(self.pg_image_gen)[:4].cpu()
+        # self.display_x = next(self.pg_image_gen)[:4].cpu()
 
         "=========================================== initialization ==================================================="
 
@@ -284,7 +284,7 @@ class Trainer:
             'enc': self.enc.state_dict(),
             'dec': self.dec.state_dict(),
         }
-    
+
     @staticmethod
     def load_anomaly_detection_model(state_dict):
         config = state_dict['config']
