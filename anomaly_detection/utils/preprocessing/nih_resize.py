@@ -22,8 +22,10 @@ if __name__ == "__main__":
 
     lenImage = len(image_names)
 
+    print(f"Début du resizing de {lenImage} images : \n")
+
     for idx, image_name in enumerate(image_names):
-        if idx%100 == 0 :
+        if idx%1000 == 0 :
             print(f"{idx}/{lenImage}")
         image_path = os.path.join(args.input_image_root, image_name)
         image = PIL.Image.open(image_path)
