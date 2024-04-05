@@ -20,7 +20,11 @@ if __name__ == "__main__":
     annotation = pd.read_csv(args.path_to_data_entry)
     image_names = annotation['Image Index'].tolist()
 
-    for image_name in image_names:
+    lenImage = len(image_names)
+
+    for idx, image_name in enumerate(image_names):
+        if idx%100 == 0 :
+            print(f"{idx}/{lenImage}")
         image_path = os.path.join(args.input_image_root, image_name)
         image = PIL.Image.open(image_path)
         image = image.convert('L')
