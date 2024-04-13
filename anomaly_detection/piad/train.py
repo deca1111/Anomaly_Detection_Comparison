@@ -182,7 +182,7 @@ class Trainer:
 
         "=========================================== data for logging ================================================="
 
-        # self.display_x = next(self.pg_image_gen)[:4].cpu()
+        self.display_x = next(self.pg_image_gen)[:4].cpu()
 
         "=========================================== initialization ==================================================="
 
