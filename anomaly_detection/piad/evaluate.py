@@ -104,6 +104,10 @@ def evaluate(config):
     print(results)
     results.to_csv(output_path, index=False)
 
+	# Save ROC curve data to a text file
+    data = np.column_stack((y_true, y_pred))
+    np.savetxt('PIAD_Results.txt', data, fmt='%.6f', delimiter=',', header='y_true, y_pred')
+
 
 def predict_anomaly_scores(gen, enc, image_rec_loss, dataset, batch_size):
     data_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=8)
