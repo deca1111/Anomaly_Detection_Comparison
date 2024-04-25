@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import sklearn.ensemble
-from sklearn.metrics import roc_curve, auc, f1_score
+from sklearn.metrics import roc_curve, auc, f1_score, precision_score, confusion_matrix
 import numpy as np
 import pandas as pd
 import torch
@@ -89,6 +89,12 @@ def train_evaluate(config):
     labels = np.concatenate((np.ones(normal_scores.shape), np.zeros(anomaly_scores.shape)))
     scores = np.concatenate((normal_scores, anomaly_scores))
 
+    # Calculate Precision
+    precision = precision_score(labels, scores < 0)
+
+    # Create Confusion Matrix
+    conf_matrix = confusion_matrix(labels, scores < 0)
+
     fpr, tpr, roc_thresholds = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
 
@@ -100,36 +106,14 @@ def train_evaluate(config):
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
+    plt.title('Deep IF ROC Curve')
     plt.legend(loc="lower right")
     plt.show()
 
-    results = pd.DataFrame([[roc_auc]], columns=['ROC AUC'])
+    results = pd.DataFrame([[roc_auc, precision]], columns=['ROC AUC', 'Precision'])
 
     print("Model evaluation is complete. Results: ")
     print(results)
+    print("Confusion Matrix:")
+    print(conf_matrix)
     results.to_csv(os.path.join(results_root, 'results.csv'))
-
-# Calculate F1 score
-    best_f1 = -1
-    best_threshold = None
-
-    for threshold in roc_thresholds:
-        y_pred = (scores <= threshold).astype(int)
-        f1 = f1_score(labels, y_pred)
-
-        if f1 > best_f1:
-            best_f1 = f1
-            best_threshold = threshold
-
-    print("Best F1 Score:", best_f1)
-    print("Best Threshold:", best_threshold)
-
-    # Calculate F1 score on test set using the best threshold
-    y_test_pred = (scores <= best_threshold).astype(int)
-    f1_test = f1_score(labels, y_test_pred)
-
-    print("F1 Score on Test Set:", f1_test)
-
-    # Add F1 score to results dataframe
-    results['F1 Score'] = f1_test
