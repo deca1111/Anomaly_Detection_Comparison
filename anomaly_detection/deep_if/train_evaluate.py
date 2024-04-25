@@ -112,3 +112,7 @@ def train_evaluate(config):
     print("Model evaluation is complete. Results: ")
     print(results)
     results.to_csv(os.path.join(results_root, 'results.csv'))
+
+    # Save ROC curve data to a text file
+    roc_data = np.column_stack((fpr, tpr, roc_thresholds))
+    np.savetxt('ROC_DeepIF.txt', roc_data, fmt='%.6f', header='False Positive Rate, True Positive Rate, ROC Thresholds')
