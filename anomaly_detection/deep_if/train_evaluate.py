@@ -90,7 +90,7 @@ def train_evaluate(config):
     scores = np.concatenate((normal_scores, anomaly_scores))
 
    # Calculate F1 score
-    f1 = f1_score(labels, scores > 0)
+    f1 = f1_score(labels, scores < 0)
 
     fpr, tpr, roc_thresholds = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
