@@ -4,7 +4,7 @@ import os
 import torch
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import roc_auc_score, roc_curve,  f1_score
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -90,9 +90,13 @@ def evaluate(config):
     y_true = np.concatenate((np.zeros_like(norm_anomaly_scores), np.ones_like(an_anomaly_scores)))
     y_pred = np.concatenate((np.array(norm_anomaly_scores), np.array(an_anomaly_scores)))
 
-    roc_auc = roc_auc_score(y_true, y_pred)
+   # Calculate F1 score
+    f1 = f1_score(y_true, y_pred < 0)
 
     fpr, tpr, thresholds = roc_curve(y_true, y_pred)
+    roc_auc = roc_auc_score(y_true, y_pred)
+
+    
 
     # Plot ROC curve
     plt.figure(figsize=(8, 6))
@@ -106,9 +110,14 @@ def evaluate(config):
     plt.legend(loc="lower right")
     plt.show()
 
+     # Save ROC curve data to a text file
+    roc_data = np.column_stack((fpr, tpr, thresholds))
+    np.savetxt('ROC_DeepIF.txt', roc_data, fmt='%.6f', header='False Positive Rate, True Positive Rate, ROC Thresholds')
+
+
     output_path = os.path.join(results_root, 'results.csv')
 
-    results = pd.DataFrame([[niter, roc_auc]], columns=['niter', 'ROC AUC'])
+    results = pd.DataFrame([[niter, roc_auc, f1]],  columns=['niter', 'ROC AUC', 'F1 Score'])
     print("Model evaluation is complete. Results: ")
     print(results)
 
