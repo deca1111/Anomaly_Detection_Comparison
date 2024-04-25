@@ -110,9 +110,12 @@ def evaluate(config):
     plt.legend(loc="lower right")
     plt.show()
 
-     # Save ROC curve data to a text file
-    roc_data = np.column_stack((fpr, tpr, thresholds, y_true, y_pred))
-    np.savetxt('roc_curve_data.txt', roc_data, fmt='%.6f', delimiter=',', header='False Positive Rate, True Positive Rate, ROC Thresholds, y_true, y_pred')
+     # Save ROC curve data to a text file   
+    roc_data = np.column_stack((fpr, tpr, thresholds))
+    np.savetxt('roc_curve_data.txt', roc_data, fmt='%.6f', delimiter=',', header='False Positive Rate, True Positive Rate, ROC Thresholds')
+
+    y_data = np.column_stack((y_true, y_pred))
+    np.savetxt('ypred_ytrue.txt', y_data, fmt='%.6f', delimiter=',', header='y_true, y_pred')
 
 
     output_path = os.path.join(results_root, 'results.csv')
