@@ -4,7 +4,8 @@ import os
 import torch
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 # import skimage.transform
@@ -90,6 +91,20 @@ def evaluate(config):
     y_pred = np.concatenate((np.array(norm_anomaly_scores), np.array(an_anomaly_scores)))
 
     roc_auc = roc_auc_score(y_true, y_pred)
+
+    fpr, tpr, thresholds = roc_curve(y_true, y_pred)
+
+    # Plot ROC curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='green', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('DPA ROC Curve')
+    plt.legend(loc="lower right")
+    plt.show()
 
     output_path = os.path.join(results_root, 'results.csv')
 
