@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import sklearn.ensemble
-from sklearn.metrics import roc_curve, auc, f1_score, precision_score, confusion_matrix
+from sklearn.metrics import roc_curve, auc, f1_score
 import numpy as np
 import pandas as pd
 import torch
@@ -89,11 +89,8 @@ def train_evaluate(config):
     labels = np.concatenate((np.ones(normal_scores.shape), np.zeros(anomaly_scores.shape)))
     scores = np.concatenate((normal_scores, anomaly_scores))
 
-    # Calculate Precision
-    precision = precision_score(labels, scores < 0)
-
-    # Create Confusion Matrix
-    conf_matrix = confusion_matrix(labels, scores < 0)
+   # Calculate F1 score
+    f1 = f1_score(labels, scores < 0)
 
     fpr, tpr, roc_thresholds = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
@@ -110,10 +107,8 @@ def train_evaluate(config):
     plt.legend(loc="lower right")
     plt.show()
 
-    results = pd.DataFrame([[roc_auc, precision]], columns=['ROC AUC', 'Precision'])
+    results = pd.DataFrame([[roc_auc, f1]], columns=['ROC AUC', 'F1 Score'])
 
     print("Model evaluation is complete. Results: ")
     print(results)
-    print("Confusion Matrix:")
-    print(conf_matrix)
     results.to_csv(os.path.join(results_root, 'results.csv'))
