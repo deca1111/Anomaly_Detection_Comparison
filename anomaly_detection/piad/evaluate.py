@@ -4,9 +4,10 @@ import os
 import torch
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from sklearn.metrics import roc_auc_score, roc_curve, auc, f1_score
+from sklearn.metrics import roc_auc_score, roc_curve, auc, f1_score, accuracy_score
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from anomaly_detection.piad.train import Trainer
 from anomaly_detection.utils.datasets import DatasetType, DATASETS
@@ -20,7 +21,7 @@ def evaluate(config):
 
     os.makedirs(results_root, exist_ok=True)
 
-    print(yaml.dump(config, default_flow_style=False))
+    # print(yaml.dump(config, default_flow_style=False))
 
     print("Starting model evaluation ...")
 
@@ -53,28 +54,51 @@ def evaluate(config):
     y_true = np.concatenate((np.zeros_like(norm_anomaly_scores), np.ones_like(an_anomaly_scores)))
     y_pred = np.concatenate((np.array(norm_anomaly_scores), np.array(an_anomaly_scores)))
 
-	# Calculate F1 score
-	# f1 = f1_score(y_true, y_pred < 0)
+    print(y_true)
+    print(y_pred)
 
-	fpr, tpr, roc_thresholds = roc_curve(y_true, y_pred)
-	roc_auc_perso = auc(fpr, tpr
+    fpr, tpr, roc_thresholds = roc_curve(y_true, y_pred)
+    roc_auc = auc(fpr, tpr)
 
-	# Plot ROC curve
+    # get best treshold
+    bestScore = -10
+    bests = None
+    for index in range(len(roc_thresholds)):
+      score = tpr[index] - fpr[index]
+      if score > bestScore:
+        bestScore = score
+        bests = (fpr[index], tpr[index], roc_thresholds[index])
+
+    print(bests)
+
     plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='red', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+
+	  # Plot ROC curve
+    plt.plot(fpr, tpr, color='red', lw=2, label='ROC curve (area = %0.3f)' % roc_auc)
+    # Plot diagonal
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+
+    # plot best treshold
+    plt.scatter(bests[0], bests[1], s=100, lw=2, color='r', edgecolors="k", label=f"Best threshold = {bests[2]:0.3f}", zorder=2)
+
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
+
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.title('Deep IF ROC Curve')
     plt.legend(loc="lower right")
     plt.show()
 
-    roc_auc = roc_auc_score(y_true, y_pred)
+	  # Calculate F1 score
+    f1 = f1_score(y_true, y_pred>bests[2])
+
+    # Calculate accuracy
+    acc = accuracy_score(y_true, y_pred>bests[2])
 
     output_path = os.path.join(results_root, 'results.csv')
-    results = pd.DataFrame([[niter, roc_auc, roc_auc_perso]], columns=['niter', 'ROC AUC', 'ROC AUC perso'])
+    results = pd.DataFrame([[niter, roc_auc, acc, f1]], columns=['niter', 'ROC AUC', 'Accuracy', 'F1'])
 
     print("Model evaluation is complete. Results: ")
     print(results)
