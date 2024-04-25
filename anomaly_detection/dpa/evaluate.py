@@ -111,8 +111,8 @@ def evaluate(config):
     plt.show()
 
      # Save ROC curve data to a text file
-    roc_data = np.column_stack((fpr, tpr, thresholds))
-    np.savetxt('ROC_DeepIF.txt', roc_data, fmt='%.6f', header='False Positive Rate, True Positive Rate, ROC Thresholds')
+    roc_data = np.column_stack((fpr, tpr, thresholds, y_true, y_pred))
+    np.savetxt('roc_curve_data.txt', roc_data, fmt='%.6f', delimiter=',', header='False Positive Rate, True Positive Rate, ROC Thresholds, y_true, y_pred')
 
 
     output_path = os.path.join(results_root, 'results.csv')
