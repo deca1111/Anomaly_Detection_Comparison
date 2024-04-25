@@ -97,7 +97,7 @@ def evaluate(config):
     roc_auc = roc_auc_score(y_true, y_pred)
 
     
-
+    
     # Plot ROC curve
     plt.figure(figsize=(8, 6))
     plt.plot(fpr, tpr, color='green', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
