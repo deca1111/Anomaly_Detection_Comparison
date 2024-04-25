@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import sklearn.ensemble
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, f1_score, confusion_matrix
 import numpy as np
 import pandas as pd
 import torch
@@ -92,20 +92,44 @@ def train_evaluate(config):
     fpr, tpr, roc_thresholds = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
 
+    # Compute F1 score
+    threshold = 0
+    y_pred = (scores < threshold).astype(int)
+    f1 = f1_score(labels, y_pred)
+
+    # Compute confusion matrix
+    tn, fp, fn, tp = confusion_matrix(labels, y_pred).ravel()
+
     # Plot ROC curve
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(fpr, tpr, color='red', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
+    plt.title('Deep IF ROC Curve')
     plt.legend(loc="lower right")
+
+    # Plot confusion matrix
+    plt.subplot(1, 2, 2)
+    cm = np.array([[tp, fp], [fn, tn]])
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('Confusion Matrix')
+    plt.colorbar()
+    tick_marks = np.arange(2)
+    plt.xticks(tick_marks, ['Anomaly', 'Normal'], rotation=45)
+    plt.yticks(tick_marks, ['Anomaly', 'Normal'])
+    plt.xlabel('Predicted label')
+    plt.ylabel('True label')
+    plt.tight_layout()
+
     plt.show()
 
-    results = pd.DataFrame([[roc_auc]], columns=['ROC AUC'])
-
-    print("Model evaluation is complete. Results: ")
+    results = pd.DataFrame([[roc_auc, f1]], columns=['ROC AUC', 'F1 Score'])
+    print("Confusion Matrix:")
+    print(cm)
+    print("\nModel evaluation is complete. Results: ")
     print(results)
     results.to_csv(os.path.join(results_root, 'results.csv'))
