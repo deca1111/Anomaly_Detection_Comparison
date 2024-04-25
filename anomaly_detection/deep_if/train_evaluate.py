@@ -108,7 +108,7 @@ def train_evaluate(config):
     plt.show()
 
     results = pd.DataFrame([[roc_auc, f1]], columns=['ROC AUC', 'F1 Score'])
-
+    
     print("Model evaluation is complete. Results: ")
     print(results)
     results.to_csv(os.path.join(results_root, 'results.csv'))
