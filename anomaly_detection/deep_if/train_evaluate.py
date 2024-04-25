@@ -90,7 +90,7 @@ def train_evaluate(config):
     scores = np.concatenate((normal_scores, anomaly_scores))
 
    # Calculate F1 score
-    f1 = f1_score(labels, scores < 0)
+    f1 = f1_score(labels, scores > 0)
 
     fpr, tpr, roc_thresholds = roc_curve(labels, scores)
     roc_auc = auc(fpr, tpr)
@@ -114,5 +114,8 @@ def train_evaluate(config):
     results.to_csv(os.path.join(results_root, 'results.csv'))
 
     # Save ROC curve data to a text file   
-    roc_data = np.column_stack((fpr, tpr, roc_thresholds, labels, scores))
-    np.savetxt('roc_curve_data.txt', roc_data, fmt='%.6f', delimiter=',', header='False Positive Rate, True Positive Rate, ROC Thresholds, y_true, y_pred')
+    roc_data = np.column_stack((fpr, tpr, roc_thresholds))
+    np.savetxt('roc_curve_data.txt', roc_data, fmt='%.6f', delimiter=',', header='False Positive Rate, True Positive Rate, ROC Thresholds')
+
+    y_data = np.column_stack((labels, scores))
+    np.savetxt('ypred_ytrue.txt', y_data, fmt='%.6f', delimiter=',', header='y_true, y_pred')
