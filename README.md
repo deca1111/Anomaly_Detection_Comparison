@@ -15,7 +15,7 @@ The project is organized as follows:
 2. **anomaly_detection**: Package containing the implementation of the various models used (see **Credits**).
 3. **data**: Useful data, including a subset of [ChestX-ray14](https://paperswithcode.com/dataset/chestx-ray14) of 
 over 7,000 images resized to 300x300.
-4. 
+4. **Comparison_of_Anomaly_Detection_Methods_in_Chest_X-rays.pdf** : Our “article” contains an in-depth analysis of our results and comparisons between the different models.
 
 ## How to Use
 This project is designed to be executed from notebooks, originally intended for Google Colab. To use:
