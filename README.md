@@ -1,7 +1,9 @@
 # Comparison of Anomaly Detection Methods in Chest X-rays
 
+___
+
 ## Overview
-This project, conducted as part of the INF8175 course at Polytechnique Montréal, compares several anomaly detection 
+This project, conducted as part of the INF8225 course at Polytechnique Montréal, compares several anomaly detection 
 methods in the context of medical imaging. Inspired by the paper 
 *Anomaly Detection in Medical Imaging with Deep Perceptual Autoencoders*, the project focuses on Deep Isolation Forest 
 (Deep IF), Perceptual Image Anomaly Detection (PIAD), and Deep Perceptual Autoencoder (DPA) methods applied to chest 
